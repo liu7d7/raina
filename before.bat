@@ -1,0 +1,2 @@
+xcopy "C:\Users\richard may clarkson\RiderProjects\Raina\Raina\Resource" "C:\Users\richard may clarkson\RiderProjects\Raina\Raina\bin\Debug\net6.0\Resource" /E /H /C /R /Q /Y
+xcopy "C:\Users\richard may clarkson\RiderProjects\Raina\Raina\Resource" "C:\Users\richard may clarkson\RiderProjects\Raina\Raina\bin\Release\net6.0\Resource" /E /H /C /R /Q /Y
