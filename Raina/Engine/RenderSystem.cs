@@ -152,6 +152,7 @@ namespace Raina.Engine
         }
 
         private const float threshold = 0.033f;
+        private const float depthThreshold = 0.8f;
 
         public static void render_outline()
         {
@@ -161,11 +162,14 @@ namespace Raina.Engine
             outline.bind();
             swap.bind_color(TextureUnit.Texture0);
             outline.set_int("_tex0", 0);
+            swap.bind_depth(TextureUnit.Texture1);
+            outline.set_int("_tex1", 1);
             outline.set_vector2("_screenSize", (size.X, size.Y));
             outline.set_float("_width", 0.75f);
             outline.set_int("_glow", 0);
             outline.set_int("_abs", 1);
             outline.set_float("_threshold", threshold);
+            outline.set_float("_depthThreshold", depthThreshold);
             outline.set_vector4("_outlineColor", Color4.HotPink.to_vector4());
             outline.set_int("_blackAndWhite", 1);
             outline.set_vector4("_otherColor", Vector4.One);

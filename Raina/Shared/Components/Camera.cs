@@ -74,7 +74,7 @@ namespace Raina.Shared.Components
             _lastX = xPos;
             _lastY = yPos;
             
-            float sensitivity = 0.1f;
+            const float sensitivity = 0.1f;
             xOffset *= sensitivity;
             yOffset *= sensitivity;
             

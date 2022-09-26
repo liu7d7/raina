@@ -4,8 +4,10 @@ in vec2 v_TexCoords;
 in vec2 v_Pos;
 
 uniform sampler2D _tex0;
+uniform sampler2D _tex1;
 uniform float _width;
 uniform float _threshold;
+uniform float _depthThreshold;
 uniform vec4 _outlineColor;
 uniform int _blackAndWhite;
 uniform int _abs;
@@ -15,10 +17,19 @@ uniform vec2 _screenSize;
 
 out vec4 fragColor;
 
-bool shouldOutline(vec2 pos, vec4 center) {
+float linearize_depth(float d, float zNear, float zFar) {
+    return zNear * zFar / (zFar + d * (zNear - zFar));
+}
+
+float depthAt(vec2 pos) {
+    float depth = texture(_tex1, pos).r;
+    return linearize_depth(depth, 0.1, 100.0);
+}
+
+bool shouldOutline(vec2 pos, vec4 center, float depth) {
     const float sqrt2 = sqrt(2.0);
     float diag = _width / sqrt2;
-    vec2 corners[8] = { (pos.xy - diag) / _screenSize, 
+    vec2 corners[8] = { (pos.xy - diag) / _screenSize,
                         (vec2(pos.x + diag, pos.y - diag)) / _screenSize,
                         (vec2(pos.x - diag, pos.y + diag)) / _screenSize,
                         (pos.xy + diag) / _screenSize,
@@ -41,8 +52,14 @@ bool shouldOutline(vec2 pos, vec4 center) {
             + abs(center.g - texture(_tex0, corners[i]).g)
             + abs(center.b - texture(_tex0, corners[i]).b);
         }
+        if (abs(depth - depthAt(corners[i])) > _depthThreshold) {
+            return true;
+        }
         if (diff > maxDiff) {
             maxDiff = diff;
+            if (maxDiff > _threshold / 2.0) {
+                break;
+            }
         }
     }
     return maxDiff > _threshold / 2.0;
@@ -50,11 +67,12 @@ bool shouldOutline(vec2 pos, vec4 center) {
 
 void main() {
     vec4 center = texture(_tex0, v_TexCoords);
-    bool o = shouldOutline(v_Pos, center);
-    bool o2[4] = { shouldOutline(v_Pos + vec2(-1, -1), center), 
-                   shouldOutline(v_Pos + vec2(1, -1), center), 
-                   shouldOutline(v_Pos + vec2(-1, 1), center), 
-                   shouldOutline(v_Pos + vec2(1, 1), center) };
+    float depth = depthAt(v_TexCoords);
+    bool o = shouldOutline(v_Pos, center, depth);
+    bool o2[4] = { shouldOutline(v_Pos + vec2(-1, -1), center, depth), 
+                   shouldOutline(v_Pos + vec2(1, -1), center, depth), 
+                   shouldOutline(v_Pos + vec2(-1, 1), center, depth), 
+                   shouldOutline(v_Pos + vec2(1, 1), center, depth) };
     float o3 = 0;
     if (_glow == 1) { 
         for (int i = 0; i < 4; i++) {

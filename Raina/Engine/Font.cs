@@ -113,6 +113,7 @@ namespace Raina.Engine
                 mesh.quad(k1, k2, k3, k4);
 
                 drawX += c.xadvance * scale;
+                drawX -= 0.4f * scale;
             }
         }
         
@@ -134,7 +135,9 @@ namespace Raina.Engine
                 StbTrueType.stbtt_packedchar c = _chars[charCode - 32];
 
                 width += c.xadvance * scale;
+                width -= 0.4f * scale;
             }
+            width += 0.4f * scale;
 
             return width;
         }

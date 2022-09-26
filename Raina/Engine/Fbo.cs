@@ -142,6 +142,10 @@ namespace Raina.Engine
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, handle);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, other);
             GL.BlitFramebuffer(0, 0, _width, _height, 0, 0, _width, _height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+            if (other == 0 || frames[other]._useDepth)
+            {
+                GL.BlitFramebuffer(0, 0, _width, _height, 0, 0, _width, _height, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
+            }
             unbind();
         }
 
