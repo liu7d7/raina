@@ -2,6 +2,8 @@ namespace Raina.Shared
 {
     public sealed class Formatting
     {
+        
+        public static readonly Dictionary<char, Formatting> values = new();
 
         public static readonly Formatting black = new(0, '0');
         public static readonly Formatting darkblue = new(0xff0000aa, '1');
@@ -21,16 +23,19 @@ namespace Raina.Shared
         public static readonly Formatting white = new(0xffffffff, 'f');
         public static readonly Formatting reset = new(0, 'r');
 
-        public uint color;
-        public uint code;
+        public readonly uint color;
+        private readonly uint _code;
 
-        public static Dictionary<char, Formatting> values = new();
-
-        Formatting(uint color, char code)
+        private Formatting(uint color, char code)
         {
             this.color = color;
-            this.code = code;
+            _code = code;
             values[code] = this;
+        }
+
+        public override string ToString()
+        {
+            return $"\u00a7{_code}";
         }
     }
 }

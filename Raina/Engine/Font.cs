@@ -82,8 +82,7 @@ namespace Raina.Engine
                 if (charCode == '\u00a7' && i < length - 1)
                 {
                     char next = lower[i + 1];
-                    Formatting fmt;
-                    if (Formatting.values.TryGetValue(next, out fmt))
+                    if (Formatting.values.TryGetValue(next, out Formatting fmt))
                     {
                         uint newColor = fmt.color;
                         red = ((newColor >> 16) & 0xFF) / 255.0f;

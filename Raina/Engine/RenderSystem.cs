@@ -17,13 +17,12 @@ namespace Raina.Engine
 
         private static Matrix4 _projection;
         private static Matrix4 _lookAt;
-        private static Matrix4[] _model = new Matrix4[7];
+        private static readonly Matrix4[] _model = new Matrix4[7];
         public static Matrix4 model;
         private static int _modelIdx;
         public static bool renderingRed;
         public static readonly Font font = new(File.ReadAllBytes("Resource/Font/Dank Mono Italic.otf"), 32);
         public static readonly Texture playerTex = Texture.load_from_file("Resource/Texture/texture1.png");
-        public static readonly SkyboxTexture skyboxTex = SkyboxTexture.load_from_file("Resource/Texture/cloud1");
 
         public static readonly Mesh mesh = new(Mesh.DrawMode.triangle, john, Vao.Attrib.float3, Vao.Attrib.float3,
             Vao.Attrib.float2, Vao.Attrib.float4);
@@ -33,7 +32,7 @@ namespace Raina.Engine
         public static readonly Mesh line = new(Mesh.DrawMode.line, john, Vao.Attrib.float3, Vao.Attrib.float3,
             Vao.Attrib.float2, Vao.Attrib.float4);
 
-        public static readonly Mesh post = new(Mesh.DrawMode.triangle, null, Vao.Attrib.float2);
+        private static readonly Mesh post = new(Mesh.DrawMode.triangle, null, Vao.Attrib.float2);
         public static readonly Fbo frame = new(size.X, size.Y, true);
         public static readonly Fbo swap = new(size.X, size.Y, true);
         public static bool rendering3d;
@@ -166,13 +165,14 @@ namespace Raina.Engine
             outline.set_int("_tex1", 1);
             outline.set_vector2("_screenSize", (size.X, size.Y));
             outline.set_float("_width", 0.75f);
-            outline.set_int("_glow", 0);
+            outline.set_int("_glow", 1);
             outline.set_int("_abs", 1);
             outline.set_float("_threshold", threshold);
             outline.set_float("_depthThreshold", depthThreshold);
             outline.set_vector4("_outlineColor", Color4.HotPink.to_vector4());
+            outline.set_int("_diffDepthCol", 0);
             outline.set_int("_blackAndWhite", 1);
-            outline.set_vector4("_otherColor", Vector4.One);
+            outline.set_vector4("_otherColor", Color4.White.to_vector4());
             post.begin();
             int i1 = post.float2(0, 0).next();
             int i2 = post.float2(size.X, 0).next();

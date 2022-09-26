@@ -9,6 +9,8 @@ uniform float _width;
 uniform float _threshold;
 uniform float _depthThreshold;
 uniform vec4 _outlineColor;
+uniform vec4 _depthOutlineColor;
+uniform int _diffDepthCol;
 uniform int _blackAndWhite;
 uniform int _abs;
 uniform int _glow;
@@ -26,7 +28,7 @@ float depthAt(vec2 pos) {
     return linearize_depth(depth, 0.1, 100.0);
 }
 
-bool shouldOutline(vec2 pos, vec4 center, float depth) {
+int shouldOutline(vec2 pos, vec4 center, float depth) {
     const float sqrt2 = sqrt(2.0);
     float diag = _width / sqrt2;
     vec2 corners[8] = { (pos.xy - diag) / _screenSize,
@@ -53,7 +55,7 @@ bool shouldOutline(vec2 pos, vec4 center, float depth) {
             + abs(center.b - texture(_tex0, corners[i]).b);
         }
         if (abs(depth - depthAt(corners[i])) > _depthThreshold) {
-            return true;
+            return 2;
         }
         if (diff > maxDiff) {
             maxDiff = diff;
@@ -62,34 +64,38 @@ bool shouldOutline(vec2 pos, vec4 center, float depth) {
             }
         }
     }
-    return maxDiff > _threshold / 2.0;
+    return maxDiff > _threshold / 2.0 ? 1 : 0;
 }
 
 void main() {
     vec4 center = texture(_tex0, v_TexCoords);
     float depth = depthAt(v_TexCoords);
-    bool o = shouldOutline(v_Pos, center, depth);
-    bool o2[4] = { shouldOutline(v_Pos + vec2(-1, -1), center, depth), 
+    int o = shouldOutline(v_Pos, center, depth);
+    int o2[4] = { shouldOutline(v_Pos + vec2(-1, -1), center, depth), 
                    shouldOutline(v_Pos + vec2(1, -1), center, depth), 
                    shouldOutline(v_Pos + vec2(-1, 1), center, depth), 
                    shouldOutline(v_Pos + vec2(1, 1), center, depth) };
     float o3 = 0;
     if (_glow == 1) { 
         for (int i = 0; i < 4; i++) {
-            if (o2[i]) {
-                o3 += 0.25;
+            if (o2[i] == 1 || o2[i] == 2) {
+                o3 += 0.05;
             }
         } 
     }
     if (_blackAndWhite == 1) {
-        if (o) {
+        if (o == 1 || _diffDepthCol == 0 && o == 2) {
             fragColor = _outlineColor;
+        } else if (o == 2) {
+            fragColor = _depthOutlineColor;
         } else {
             fragColor = mix(_otherColor, _outlineColor, vec4(o3));
         }
     } else {
-        if (o) {
+        if (o == 1 || _diffDepthCol == 0 && o == 2) {
             fragColor = _outlineColor;
+        } else if (o == 2) {
+            fragColor = _depthOutlineColor;
         } else {
             fragColor = mix(center, _outlineColor, vec4(o3));
         }

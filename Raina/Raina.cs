@@ -82,7 +82,6 @@ namespace Raina
             RenderSystem.render_outline();
             
             RenderSystem.frame.bind();
-            render_skybox();
             
             Fbo.unbind();
 
@@ -93,7 +92,7 @@ namespace Raina
             RenderSystem.font.bind();
             RenderSystem.renderingRed = true;
             RenderSystem.mesh.begin();
-            RenderSystem.font.draw(RenderSystem.mesh, "mspf: " + (Environment.TickCount - _lastFrame), -Size.X / 2f + 11, Size.Y / 2f - 8, Color4.HotPink.to_uint(), false);
+            RenderSystem.font.draw(RenderSystem.mesh, "mspf: \u00a70" + (Environment.TickCount - _lastFrame), -Size.X / 2f + 11, Size.Y / 2f - 8, Color4.HotPink.to_uint(), false);
             RenderSystem.mesh.render();
             RenderSystem.renderingRed = false;
             Font.unbind();
@@ -101,25 +100,6 @@ namespace Raina
             _lastFrame = Environment.TickCount;
 
             SwapBuffers();
-        }
-
-        private static void render_skybox()
-        {
-            GlStateManager.depth_mask(false);
-            for (int i = 0; i < 6; i++)
-            {
-                Texture.bind_cubemap(RenderSystem.skyboxTex.ids[i]);
-                int start = i * 4; 
-                Vector3[] verts = RenderSystem.skyboxVertices;
-                RenderSystem.skybox.begin();
-                int i1 = RenderSystem.skybox.float3(verts[start + 0] * 10).float2(0, 0).next();
-                int i2 = RenderSystem.skybox.float3(verts[start + 1] * 10).float2(1, 0).next();
-                int i3 = RenderSystem.skybox.float3(verts[start + 2] * 10).float2(1, 1).next();
-                int i4 = RenderSystem.skybox.float3(verts[start + 3] * 10).float2(0, 1).next();
-                RenderSystem.skybox.quad(i1, i2, i3, i4);
-                RenderSystem.skybox.render();
-            }
-            GlStateManager.depth_mask(true);
         }
 
         protected override void OnMouseMove(MouseMoveEventArgs e)
