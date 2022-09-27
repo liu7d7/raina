@@ -37,11 +37,12 @@ namespace Raina.Shared
         public void add(Component component)
         {
             _components.Add(component);
+            _cache[component.get_type()] = component;
         }
         
-        private bool comp_finder<T>(Component comp)
+        private static bool comp_finder<T>(Component comp)
         {
-            return typeof(T) == comp.GetType();
+            return typeof(T) == comp.get_type();
         }
 
         private readonly Dictionary<Type, Component> _cache = new();
@@ -82,7 +83,7 @@ namespace Raina.Shared
 
             public override int GetHashCode()
             {
-                return GetType().GetHashCode();
+                return this.get_type().get_hash_code();
             }
         }
     }

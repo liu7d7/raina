@@ -25,7 +25,7 @@ float linearize_depth(float d, float zNear, float zFar) {
 
 float depthAt(vec2 pos) {
     float depth = texture(_tex1, pos).r;
-    return linearize_depth(depth, 0.1, 100.0);
+    return linearize_depth(depth, 0.1, 90.0);
 }
 
 int shouldOutline(vec2 pos, vec4 center, float depth) {
@@ -76,12 +76,12 @@ void main() {
                    shouldOutline(v_Pos + vec2(-1, 1), center, depth), 
                    shouldOutline(v_Pos + vec2(1, 1), center, depth) };
     float o3 = 0;
-    if (_glow == 1) { 
+    if (_glow == 1) {
         for (int i = 0; i < 4; i++) {
             if (o2[i] == 1 || o2[i] == 2) {
                 o3 += 0.05;
             }
-        } 
+        }
     }
     if (_blackAndWhite == 1) {
         if (o == 1 || _diffDepthCol == 0 && o == 2) {

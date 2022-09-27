@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using OpenTK.Mathematics;
 
@@ -10,12 +11,45 @@ namespace Raina.Shared
             return pairs.ToDictionary(pair => pair.Key, pair => pair.Value);
         }
     }
-    
+
+    public static class Colors
+    {
+        private static bool _initialized;
+        private static readonly Dictionary<string, Color4> values = new();
+
+        public static Color4 get_color4(string color)
+        {
+            if (_initialized) return values[color.ToLower()];
+            foreach (PropertyInfo john in typeof(Color4).GetProperties())
+            {
+                object val = john.GetValue(null);
+                if (val == null)
+                {
+                    continue;
+                }
+                    
+                if (val.get_type() == typeof(Color4))
+                {
+                    values.Add(john.Name.ToLower(), (Color4) val);
+                }
+            }
+
+            _initialized = true;
+            return values[color.ToLower()];
+        }
+        
+        public static Color4 get_random_color4()
+        {
+            if (!_initialized) get_color4("white");
+            return values.Values.ElementAt(new Random().Next(values.Count));
+        }
+    }
+
     public static class Extensions
     {
         public static string content_to_string<T>(this T[] arr)
         {
-            string o = arr.ToString() ?? string.Empty;
+            string o = arr.to_string() ?? string.Empty;
             o = o[..^1];
             foreach (T item in arr)
             {
@@ -46,7 +80,7 @@ namespace Raina.Shared
                 o.Remove(o.Length - 3, 3);
             }
             o.Append(')');
-            return o.ToString();
+            return o.to_string();
         }
 
         public static void transform(this ref Vector4 vec, Matrix4 m4F)
@@ -151,11 +185,36 @@ namespace Raina.Shared
             mat.M44 = other.M44;
         }
 
+        public static string to_string(this object obj)
+        {
+            return obj.ToString();
+        }
+        
+        public static Type get_type(this object obj)
+        {
+            return obj.GetType();
+        }
+        
+        public static int get_hash_code(this object obj)
+        {
+            return obj.GetHashCode();
+        }
+        
+        public static bool equals(this object obj, object other)
+        {
+            return obj.Equals(other);
+        }
+
         public static int distance_sq(this Vector2i vec, Vector2i other)
         {
-            var (x, y) = vec;
-            var (i, i1) = other;
+            (int x, int y) = vec;
+            (int i, int i1) = other;
             return (x - i) * (x - i) + (y - i1) * (y - i1);
+        }
+
+        public static float next_float(this Random random)
+        {
+            return (float)random.NextDouble();
         }
     }
 }

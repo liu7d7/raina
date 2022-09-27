@@ -77,7 +77,7 @@ namespace Raina.Shared.Components
             }
         }
 
-        private Model3d(string path, Dictionary<string, uint> colors)
+        private Model3d(string path, Dictionary<string, uint> colors, float scale)
         {
             List<Vector3> vertices = new();
             List<Vector3> normals = new();
@@ -96,9 +96,9 @@ namespace Raina.Shared.Components
                     case "v":
                     {
                         Vector3 vec = new();
-                        vec.X = float.Parse(parts[1]);
-                        vec.Y = float.Parse(parts[2]);
-                        vec.Z = float.Parse(parts[3]);
+                        vec.X = float.Parse(parts[1]) * scale;
+                        vec.Y = float.Parse(parts[2]) * scale;
+                        vec.Z = float.Parse(parts[3]) * scale;
                         vertices.Add(vec);
                         break;
                     }
@@ -170,9 +170,11 @@ namespace Raina.Shared.Components
             }
         }
 
-        public static Model3d read(string path, Dictionary<string, uint> colors)
+        public static Model3d read(string path, Dictionary<string, uint> colors, float scale = 1)
         {
-            return components.ContainsKey(path + colors.content_to_string()) ? components[path + colors.content_to_string()] : new(path, colors);
+            string id = path + colors.content_to_string() + scale;
+            Console.WriteLine(id);
+            return components.ContainsKey(id) ? components[id] : new Model3d(path, colors, scale);
         }
     }
 }

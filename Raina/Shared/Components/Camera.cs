@@ -8,21 +8,21 @@ namespace Raina.Shared.Components
     {
         private Vector3 _front;
         private Vector3 _right;
-        private readonly Vector3 up;
+        private readonly Vector3 _up;
         private FloatPos _pos;
 
         public Camera()
         {
             _front = Vector3.Zero;
             _right = Vector3.Zero;
-            up = Vector3.UnitY;
+            _up = Vector3.UnitY;
             _lastX = 0;
         }
 
         private void update_camera_vectors()
         {
             _front = new Vector3(MathF.Cos(_pos.pitch.to_radians()) * MathF.Cos(_pos.yaw.to_radians()), MathF.Sin(_pos.pitch.to_radians()), MathF.Cos(_pos.pitch.to_radians()) * MathF.Sin(_pos.yaw.to_radians())).Normalized();
-            _right = Vector3.Cross(_front, up).Normalized();
+            _right = Vector3.Cross(_front, _up).Normalized();
         }
 
         public override void update(RainaObj objIn)
@@ -48,7 +48,7 @@ namespace Raina.Shared.Components
             Vector3 current = _pos.to_vector3();
             current += _front * forwards;
             current += _right * rightwards;
-            current += up * upwards;
+            current += _up * upwards;
             _pos.set_vector3(current);
         }
 
@@ -96,7 +96,7 @@ namespace Raina.Shared.Components
                 return Matrix4.Identity;
             }
             Vector3 pos = new(_pos.lerped_x, _pos.lerped_y, _pos.lerped_z);
-            Matrix4 lookAt = Matrix4.LookAt(pos - _front, pos, up);
+            Matrix4 lookAt = Matrix4.LookAt(pos - _front, pos, _up);
             return lookAt;
         }
     }

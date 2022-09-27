@@ -17,6 +17,7 @@ namespace Raina
         public static Raina instance;
         public static Model3d model;
         public static RainaObj camera;
+        public static List<RainaObj> spheres;
 
         public Raina(GameWindowSettings windowSettings, NativeWindowSettings nativeWindowSettings) : base(windowSettings, nativeWindowSettings)
         {
@@ -30,8 +31,19 @@ namespace Raina
             pos.x = pos.prevX = pos.z = pos.prevZ = -1;
             pos.y = pos.prevY = 25;
             camera.update();
+            spheres = new List<RainaObj>();
+            for (int i = 0; i < 10; i++)
+            {
+                RainaObj obj = new();
+                obj.add(new FloatPos());
+                obj.get<FloatPos>().set_vector3((Random.Shared.next_float() * 180 - 90, Random.Shared.next_float() * 180 - 90,
+                    Random.Shared.next_float() * 180 - 90));
+                obj.get<FloatPos>().set_prev();
+                obj.add(new Model3d.Component(Model3d.read("sphere", new Dictionary<string, uint>(), 10)));
+                spheres.Add(obj);
+            }
         }
-
+        
         protected override void OnLoad()
         {
             base.OnLoad();
@@ -75,6 +87,15 @@ namespace Raina
             model.render(RenderSystem.mesh, Vector3.Zero);
             RenderSystem.mesh.render();
             Texture.unbind();
+            
+            RenderSystem.rect.bind(TextureUnit.Texture0);
+            RenderSystem.mesh.begin();
+            foreach (RainaObj obj in spheres)
+            {
+                obj.render();
+            }
+            RenderSystem.mesh.render();
+            Texture.unbind();
 
             RenderSystem.frame.bind();
 
@@ -92,7 +113,7 @@ namespace Raina
             RenderSystem.font.bind();
             RenderSystem.renderingRed = true;
             RenderSystem.mesh.begin();
-            RenderSystem.font.draw(RenderSystem.mesh, "mspf: \u00a70" + (Environment.TickCount - _lastFrame), -Size.X / 2f + 11, Size.Y / 2f - 8, Color4.HotPink.to_uint(), false);
+            RenderSystem.font.draw(RenderSystem.mesh, $"mspf: \u00a70" + (Environment.TickCount - _lastFrame), -Size.X / 2f + 11, Size.Y / 2f - 8, Color4.HotPink.to_uint(), false);
             RenderSystem.mesh.render();
             RenderSystem.renderingRed = false;
             Font.unbind();

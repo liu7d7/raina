@@ -23,6 +23,7 @@ namespace Raina.Engine
         public static bool renderingRed;
         public static readonly Font font = new(File.ReadAllBytes("Resource/Font/Dank Mono Italic.otf"), 32);
         public static readonly Texture playerTex = Texture.load_from_file("Resource/Texture/texture1.png");
+        public static readonly Texture rect = Texture.load_from_file("Resource/Texture/rect.png");
 
         public static readonly Mesh mesh = new(Mesh.DrawMode.triangle, john, Vao.Attrib.float3, Vao.Attrib.float3,
             Vao.Attrib.float2, Vao.Attrib.float4);
@@ -37,35 +38,7 @@ namespace Raina.Engine
         public static readonly Fbo swap = new(size.X, size.Y, true);
         public static bool rendering3d;
         private static FloatPos _camera;
-
-        public static readonly Vector3[] skyboxVertices =
-        {
-            (-1.0f,  1.0f, -1.0f),
-            (-1.0f, -1.0f, -1.0f),
-            (1.0f, -1.0f, -1.0f),
-            (1.0f,  1.0f, -1.0f),
-            (-1.0f, -1.0f,  1.0f),
-            (-1.0f, -1.0f, -1.0f),
-            (-1.0f,  1.0f, -1.0f),
-            (-1.0f,  1.0f,  1.0f),
-            (1.0f, -1.0f, -1.0f),
-            (1.0f, -1.0f,  1.0f),
-            (1.0f,  1.0f,  1.0f),
-            (1.0f,  1.0f, -1.0f),
-            (-1.0f, -1.0f,  1.0f),
-            (-1.0f,  1.0f,  1.0f),
-            (1.0f,  1.0f,  1.0f),
-            (1.0f, -1.0f,  1.0f),
-            (-1.0f,  1.0f, -1.0f),
-            (1.0f,  1.0f, -1.0f),
-            (1.0f,  1.0f,  1.0f),
-            (-1.0f,  1.0f,  1.0f),
-            (-1.0f, -1.0f, -1.0f),
-            (-1.0f, -1.0f,  1.0f),
-            (1.0f, -1.0f, -1.0f),
-            (-1.0f, -1.0f,  1.0f),
-        };
-
+        
         static RenderSystem()
         {
             Array.Fill(_model, Matrix4.Identity);
@@ -165,7 +138,7 @@ namespace Raina.Engine
             outline.set_int("_tex1", 1);
             outline.set_vector2("_screenSize", (size.X, size.Y));
             outline.set_float("_width", 0.75f);
-            outline.set_int("_glow", 1);
+            outline.set_int("_glow", 0);
             outline.set_int("_abs", 1);
             outline.set_float("_threshold", threshold);
             outline.set_float("_depthThreshold", depthThreshold);
@@ -187,7 +160,7 @@ namespace Raina.Engine
         {
             if (rendering3d)
             {
-                Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45), size.X / (float)size.Y, 0.1f, 100,
+                Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45), size.X / (float)size.Y, 0.1f, 1000,
                     out _projection);
                 return;
             }
